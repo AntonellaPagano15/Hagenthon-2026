@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Leggi la Polizza per Me · Hagenthon</title>
+<title>Polizza in Chiaro · Hagenthon</title>
 <style>
   :root {
     --purple: #A100FF;
@@ -45,6 +45,7 @@
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
   .hero p { max-width: 640px; margin: 0 auto; color: rgba(255,255,255,0.65); font-size: 17px; }
+  .hero .tagline { font-size: 20px; font-weight: 600; color: var(--purple-light); margin: 0 0 14px; }
   section.slide {
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 18px;
@@ -115,8 +116,9 @@
 
   <div class="hero">
     <span class="eyebrow">Tema 01 · Accessibilità Digitale</span>
-    <h1>Leggi la <span class="grad">Polizza</span> per Me</h1>
-    <p>Un agente che legge il set informativo di una polizza salute/vita al posto tuo, risponde alle tue domande
+    <h1>Polizza <span class="grad">in Chiaro</span></h1>
+    <p class="tagline">Comprendere ogni dettaglio, senza barriere.</p>
+    <p>Un agente che legge il set informativo di qualsiasi polizza al posto tuo, risponde alle tue domande
     citando la fonte, e ti consegna un riepilogo di una pagina da tenere nel portafogli.</p>
   </div>
 
@@ -124,16 +126,16 @@
   <section class="slide">
     <header class="slide-head">
       <span class="slide-num">01 · Persona &amp; Barriera</span>
-      <h2>Chi aiutiamo, e dove si blocca</h2>
+      <h2>Chi aiutiamo e perché</h2>
     </header>
     <div class="cols">
       <div>
         <h3>La persona</h3>
-        <p class="lead">Una persona di 65-75 anni, bassa alfabetizzazione digitale e assicurativa, riceve il
-        set informativo di una polizza salute o vita individuale (40-100+ pagine).</p>
+        <p class="lead">Chiunque fatichi a comprendere un testo complesso — per età avanzata, giovane età,
+        disabilità visive o bassa alfabetizzazione — e riceva il set informativo di una polizza (40-100+ pagine).</p>
       </div>
       <div>
-        <h3>Il blocco esatto</h3>
+        <h3>Il problema</h3>
         <ul class="bullets">
           <li>Non riesce a distinguere cosa è coperto da cosa non lo è</li>
           <li>Le esclusioni più importanti sono nascoste in paragrafi dentro un linguaggio legale</li>
@@ -142,7 +144,6 @@
         </ul>
       </div>
     </div>
-    <div class="quote">"Il focus non è l'audit tecnico del documento né la conformità formale: è la persona." — dal brief del tema</div>
   </section>
 
   <!-- 2. Soluzione -->
@@ -162,9 +163,9 @@
     </div>
     <h3>Cosa rende diversa questa idea</h3>
     <ul class="bullets">
-      <li>Non è una semplificazione generica del testo: è un <strong>modello navigabile</strong> della polizza, con citazione di articolo e pagina per ogni voce</li>
-      <li>Isola in modo esplicito le <strong>esclusioni ad alto impatto</strong> — la parte che fa più male scoprire solo al momento del sinistro</li>
-      <li><strong>Input vocale</strong> nella chat: la persona parla la domanda invece di scriverla</li>
+      <li>Trovi subito la risposta che cerchi, <strong>senza leggere tutto il documento</strong></li>
+      <li>Vedi a colpo d'occhio le <strong>esclusioni più pericolose</strong> — quelle che altrimenti scopriresti troppo tardi</li>
+      <li>Puoi fare la domanda <strong>a voce</strong>, senza dover scrivere</li>
     </ul>
   </section>
 
@@ -188,40 +189,10 @@
     </div>
   </section>
 
-  <!-- 4. Architettura agentica -->
+  <!-- 4. Autonomia & Limiti -->
   <section class="slide">
     <header class="slide-head">
-      <span class="slide-num">04 · Struttura agentica</span>
-      <h2>Due agenti, nessuna API key</h2>
-    </header>
-    <p class="lead">L'intero backend invoca il CLI <strong>Claude Code</strong> già autenticato con la licenza
-    Accenture via <code>subprocess</code> — zero chiavi Anthropic in codice. Dettagli completi in
-    <code>/agents</code>.</p>
-    <div class="cols">
-      <div class="card">
-        <span class="num">Agente 1</span>
-        <h5>Analizzatore Polizza</h5>
-        <p>Un solo turno per documento. Input: testo PDF. Output: JSON strutturato con coperture, esclusioni
-        (con livello di impatto), procedura sinistro, costi — ogni voce con riferimento ad articolo/pagina.</p>
-      </div>
-      <div class="card">
-        <span class="num">Agente 2</span>
-        <h5>Assistente Chat</h5>
-        <p>Un turno per domanda. Input: documento + storico + domanda (scritta o dettata). Output: risposta
-        in max 3 frasi, sempre con citazione della fonte, mai un consiglio assicurativo.</p>
-      </div>
-    </div>
-    <h3>Perché stdin, non argomenti da riga di comando</h3>
-    <p class="muted">Un set informativo supera facilmente gli 80.000 caratteri, ben oltre il limite della riga
-    di comando di Windows (~32.000 caratteri). Il documento viaggia sempre come input dello stdin del processo,
-    mai come argomento CLI. Ogni chiamata usa <code>--restricted</code>: il modello genera solo testo, senza
-    accesso a Bash, file o rete.</p>
-  </section>
-
-  <!-- 5. Autonomia & Limiti -->
-  <section class="slide">
-    <header class="slide-head">
-      <span class="slide-num">05 · Autonomia &amp; Limiti</span>
+      <span class="slide-num">04 · Autonomia &amp; Limiti</span>
       <h2>Cosa guadagna la persona, cosa resta da fare</h2>
     </header>
     <div class="cols">
@@ -249,24 +220,8 @@
     </div>
   </section>
 
-  <!-- 6. Stack -->
-  <section class="slide">
-    <header class="slide-head">
-      <span class="slide-num">06 · Stack tecnico</span>
-      <h2>Com'è fatto, in breve</h2>
-    </header>
-    <table class="stack">
-      <tr><td>Backend</td><td>FastAPI (Python) — <code>app/main.py</code></td></tr>
-      <tr><td>Estrazione PDF</td><td>pdfplumber</td></tr>
-      <tr><td>Motore AI</td><td>CLI Claude Code via subprocess, licenza Accenture, nessuna API key</td></tr>
-      <tr><td>Frontend</td><td>HTML/JS vanilla + Tailwind CDN — <code>app/static/index.html</code></td></tr>
-      <tr><td>Input vocale</td><td>Web Speech API del browser (<code>it-IT</code>)</td></tr>
-      <tr><td>Deliverable</td><td><code>app/</code> soluzione · <code>agents/</code> struttura agentica · <code>presentation/</code> questa presentazione</td></tr>
-    </table>
-  </section>
-
   <footer>
-    Hagenthon <span class="mark">&gt;</span> Accenture Application Engineering &middot; Leggi la Polizza per Me
+    Hagenthon <span class="mark">&gt;</span> Accenture Application Engineering &middot; Polizza in Chiaro
   </footer>
 </div>
 </body>
