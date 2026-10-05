@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Leggi la Polizza per Me · Hagenthon</title>
+<style>
+  :root {
+    --purple: #A100FF;
+    --purple-light: #BE82FF;
+    --purple-dark: #460073;
+    --ink: #0A0014;
+    --rose: #FF50A0;
+    --green: #22C55E;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #050008;
+    color: #fff;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 48px 24px 80px; }
+  .brand {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; margin-bottom: 40px;
+  }
+  .brand .logo { font-size: 20px; font-weight: 700; letter-spacing: -0.02em; }
+  .brand .logo .mark { color: var(--purple); }
+  .brand .org { text-align: right; font-size: 10px; line-height: 1.4; }
+  .brand .org .a { color: var(--purple-light); text-transform: uppercase; letter-spacing: 0.25em; font-weight: 600; }
+  .brand .org .b { color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.2em; }
+  .hero { text-align: center; margin-bottom: 56px; }
+  .hero .eyebrow {
+    display: inline-block; border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.05); border-radius: 999px;
+    padding: 6px 16px; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.25em; color: rgba(255,255,255,0.7);
+  }
+  .hero h1 { font-size: 42px; font-weight: 700; letter-spacing: -0.02em; margin: 20px 0 12px; }
+  .hero h1 .grad {
+    background: linear-gradient(90deg, var(--purple-light), var(--purple));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .hero p { max-width: 640px; margin: 0 auto; color: rgba(255,255,255,0.65); font-size: 17px; }
+  section.slide {
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    background: rgba(255,255,255,0.02);
+    padding: 32px;
+    margin-bottom: 32px;
+  }
+  .slide-head { border-bottom: 1px solid rgba(161,0,255,0.25); padding-bottom: 16px; margin-bottom: 20px; }
+  .slide-num { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.25em; color: var(--purple-light); }
+  .slide-head h2 { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin: 6px 0 0; }
+  .lead { font-size: 17px; color: rgba(255,255,255,0.85); }
+  .muted { color: rgba(255,255,255,0.55); font-size: 14px; }
+  h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.2em; color: var(--purple-light); margin: 24px 0 10px; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .bullets { list-style: none; padding: 0; margin: 0; }
+  .bullets li { position: relative; padding-left: 20px; color: rgba(255,255,255,0.75); margin-bottom: 8px; }
+  .bullets li::before { content: "›"; position: absolute; left: 0; color: var(--purple); font-weight: 700; }
+  .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .card { border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; }
+  .card .num { font-size: 13px; font-weight: 700; color: var(--purple-light); }
+  .card h5 { font-size: 14px; font-weight: 600; margin: 6px 0 6px; }
+  .card p { font-size: 13px; color: rgba(255,255,255,0.55); margin: 0; }
+  .badge { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+  .badge-ok { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+  .badge-no { background: rgba(255,80,160,0.12); color: var(--rose); border: 1px solid rgba(255,80,160,0.25); }
+  .flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+  .flow .step {
+    border: 1px solid rgba(161,0,255,0.3); background: rgba(161,0,255,0.08);
+    border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; flex: 1; min-width: 140px; text-align: center;
+  }
+  .flow .arrow { color: var(--purple-light); font-size: 20px; }
+  .before-after { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .ba-box { border-radius: 14px; padding: 20px; }
+  .ba-before { background: rgba(255,80,160,0.06); border: 1px solid rgba(255,80,160,0.25); }
+  .ba-after { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.25); }
+  .ba-box h4 { margin: 0 0 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.15em; }
+  .ba-before h4 { color: var(--rose); }
+  .ba-after h4 { color: var(--green); }
+  table.stack { width: 100%; border-collapse: collapse; font-size: 14px; }
+  table.stack td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,0.08); color: rgba(255,255,255,0.8); }
+  table.stack td:first-child { color: var(--purple-light); font-weight: 600; width: 180px; }
+  .quote {
+    border-left: 3px solid var(--purple);
+    padding: 4px 0 4px 18px; color: rgba(255,255,255,0.7); font-style: italic; margin: 16px 0;
+  }
+  footer { text-align: center; margin-top: 40px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.2em; color: rgba(255,255,255,0.25); }
+  footer .mark { color: var(--purple); }
+  @media (max-width: 640px) {
+    .cols, .cards-3, .before-after { grid-template-columns: 1fr; }
+    .hero h1 { font-size: 30px; }
+  }
+  @media print {
+    body { background: #fff; color: #111; }
+    section.slide { break-inside: avoid; border-color: #ddd; background: #fff; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <span class="logo">Hagenthon<span class="mark">&gt;</span></span>
+    <span class="org">
+      <span class="a">Accenture</span><br />
+      <span class="b">Application Engineering</span>
+    </span>
+  </div>
+
+  <div class="hero">
+    <span class="eyebrow">Tema 01 · Accessibilità Digitale</span>
+    <h1>Leggi la <span class="grad">Polizza</span> per Me</h1>
+    <p>Un agente che legge il set informativo di una polizza salute/vita al posto tuo, risponde alle tue domande
+    citando la fonte, e ti consegna un riepilogo di una pagina da tenere nel portafogli.</p>
+  </div>
+
+  <!-- 1. Persona & Barriera -->
+  <section class="slide">
+    <header class="slide-head">
+      <span class="slide-num">01 · Persona &amp; Barriera</span>
+      <h2>Chi aiutiamo, e dove si blocca</h2>
+    </header>
+    <div class="cols">
+      <div>
+        <h3>La persona</h3>
+        <p class="lead">Una persona di 65-75 anni, bassa alfabetizzazione digitale e assicurativa, riceve il
+        set informativo di una polizza salute o vita individuale (40-100+ pagine).</p>
+      </div>
+      <div>
+        <h3>Il blocco esatto</h3>
+        <ul class="bullets">
+          <li>Non riesce a distinguere cosa è coperto da cosa non lo è</li>
+          <li>Le esclusioni più importanti sono nascoste in paragrafi dentro un linguaggio legale</li>
+          <li>Non sa cosa fare concretamente in caso di sinistro</li>
+          <li>Rinuncia a leggere, oppure firma senza aver capito davvero</li>
+        </ul>
+      </div>
+    </div>
+    <div class="quote">"Il focus non è l'audit tecnico del documento né la conformità formale: è la persona." — dal brief del tema</div>
+  </section>
+
+  <!-- 2. Soluzione -->
+  <section class="slide">
+    <header class="slide-head">
+      <span class="slide-num">02 · La soluzione</span>
+      <h2>Dal PDF alla comprensione, in 4 passi</h2>
+    </header>
+    <div class="flow">
+      <div class="step">📄 Carica il PDF</div>
+      <div class="arrow">→</div>
+      <div class="step">🔍 Analisi strutturata</div>
+      <div class="arrow">→</div>
+      <div class="step">💬 Domande libere (anche a voce)</div>
+      <div class="arrow">→</div>
+      <div class="step">🖨️ Carta della Polizza</div>
+    </div>
+    <h3>Cosa rende diversa questa idea</h3>
+    <ul class="bullets">
+      <li>Non è una semplificazione generica del testo: è un <strong>modello navigabile</strong> della polizza, con citazione di articolo e pagina per ogni voce</li>
+      <li>Isola in modo esplicito le <strong>esclusioni ad alto impatto</strong> — la parte che fa più male scoprire solo al momento del sinistro</li>
+      <li><strong>Input vocale</strong> nella chat: la persona parla la domanda invece di scriverla</li>
+    </ul>
+  </section>
+
+  <!-- 3. Prima / Dopo -->
+  <section class="slide">
+    <header class="slide-head">
+      <span class="slide-num">03 · Percorso assistito</span>
+      <h2>Prima e dopo</h2>
+    </header>
+    <div class="before-after">
+      <div class="ba-box ba-before">
+        <h4>Prima</h4>
+        <p>44 pagine di linguaggio assicurativo. Nessuna indicazione su cosa è davvero importante.
+        La persona non sa se è coperta per un infortunio stradale, né cosa fare se si ammala.</p>
+      </div>
+      <div class="ba-box ba-after">
+        <h4>Dopo</h4>
+        <p>4 sezioni chiare (Coperture, Esclusioni, Sinistro, Costi), una domanda vocale risolta in pochi secondi
+        con citazione della fonte, una Carta della Polizza stampabile con le 5 coperture e le 5 esclusioni più rilevanti.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Architettura agentica -->
+  <section class="slide">
+    <header class="slide-head">
+      <span class="slide-num">04 · Struttura agentica</span>
+      <h2>Due agenti, nessuna API key</h2>
+    </header>
+    <p class="lead">L'intero backend invoca il CLI <strong>Claude Code</strong> già autenticato con la licenza
+    Accenture via <code>subprocess</code> — zero chiavi Anthropic in codice. Dettagli completi in
+    <code>/agents</code>.</p>
+    <div class="cols">
+      <div class="card">
+        <span class="num">Agente 1</span>
+        <h5>Analizzatore Polizza</h5>
+        <p>Un solo turno per documento. Input: testo PDF. Output: JSON strutturato con coperture, esclusioni
+        (con livello di impatto), procedura sinistro, costi — ogni voce con riferimento ad articolo/pagina.</p>
+      </div>
+      <div class="card">
+        <span class="num">Agente 2</span>
+        <h5>Assistente Chat</h5>
+        <p>Un turno per domanda. Input: documento + storico + domanda (scritta o dettata). Output: risposta
+        in max 3 frasi, sempre con citazione della fonte, mai un consiglio assicurativo.</p>
+      </div>
+    </div>
+    <h3>Perché stdin, non argomenti da riga di comando</h3>
+    <p class="muted">Un set informativo supera facilmente gli 80.000 caratteri, ben oltre il limite della riga
+    di comando di Windows (~32.000 caratteri). Il documento viaggia sempre come input dello stdin del processo,
+    mai come argomento CLI. Ogni chiamata usa <code>--restricted</code>: il modello genera solo testo, senza
+    accesso a Bash, file o rete.</p>
+  </section>
+
+  <!-- 5. Autonomia & Limiti -->
+  <section class="slide">
+    <header class="slide-head">
+      <span class="slide-num">05 · Autonomia &amp; Limiti</span>
+      <h2>Cosa guadagna la persona, cosa resta da fare</h2>
+    </header>
+    <div class="cols">
+      <div>
+        <h3>Autonomia guadagnata</h3>
+        <ul class="bullets">
+          <li>Capisce da sola cosa copre la sua polizza, senza chiedere a terzi</li>
+          <li>Trova la risposta a una domanda specifica in secondi, non in 44 pagine</li>
+          <li>Ha un documento fisico (la Carta) a cui tornare in caso di dubbio</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Limiti dichiarati</h3>
+        <ul class="bullets">
+          <li>Lo strumento <strong>spiega</strong> il documento, non sostituisce un intermediario abilitato</li>
+          <li>Non fornisce consulenza assicurativa né raccomandazioni di acquisto</li>
+          <li>L'analisi di un documento lungo richiede 60-90 secondi con il CLI (comunicato con messaggi di attesa espliciti)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cards-3">
+      <div class="card"><span class="num">AI</span><h5>Dove ha contribuito</h5><p>Estrazione, struttura, linguaggio semplificato, risposte contestuali con citazione.</p></div>
+      <div class="card"><span class="num">Umano</span><h5>Dove serve revisione</h5><p>Decisioni contrattuali, firma, casi dubbi da verificare con un intermediario.</p></div>
+      <div class="card"><span class="num">Disclaimer</span><h5>Sempre visibile</h5><p>"Questo strumento spiega il documento. Non fornisce consulenza assicurativa."</p></div>
+    </div>
+  </section>
+
+  <!-- 6. Stack -->
+  <section class="slide">
+    <header class="slide-head">
+      <span class="slide-num">06 · Stack tecnico</span>
+      <h2>Com'è fatto, in breve</h2>
+    </header>
+    <table class="stack">
+      <tr><td>Backend</td><td>FastAPI (Python) — <code>app/main.py</code></td></tr>
+      <tr><td>Estrazione PDF</td><td>pdfplumber</td></tr>
+      <tr><td>Motore AI</td><td>CLI Claude Code via subprocess, licenza Accenture, nessuna API key</td></tr>
+      <tr><td>Frontend</td><td>HTML/JS vanilla + Tailwind CDN — <code>app/static/index.html</code></td></tr>
+      <tr><td>Input vocale</td><td>Web Speech API del browser (<code>it-IT</code>)</td></tr>
+      <tr><td>Deliverable</td><td><code>app/</code> soluzione · <code>agents/</code> struttura agentica · <code>presentation/</code> questa presentazione</td></tr>
+    </table>
+  </section>
+
+  <footer>
+    Hagenthon <span class="mark">&gt;</span> Accenture Application Engineering &middot; Leggi la Polizza per Me
+  </footer>
+</div>
+</body>
+</html>

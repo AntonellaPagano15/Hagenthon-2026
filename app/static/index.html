@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leggi la Polizza per Me</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { font-size: 18px; }
+    #pdf-iframe { width: 100%; height: 100%; border: none; }
+    .tab-active { color: #1d4ed8; border-bottom: 3px solid #1d4ed8; font-weight: 700; }
+    .esclusione-alto  { border-left: 4px solid #dc2626; }
+    .esclusione-medio { border-left: 4px solid #f59e0b; }
+    .esclusione-basso { border-left: 4px solid #9ca3af; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 1s linear infinite; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 flex flex-col h-screen overflow-hidden">
+
+  <!-- Header -->
+  <header class="bg-blue-800 text-white px-6 py-3 flex items-center justify-between shadow-lg flex-shrink-0">
+    <div>
+      <h1 class="text-xl font-bold leading-tight">🛡️ Leggi la Polizza per Me</h1>
+      <p class="text-blue-300 text-xs mt-0.5">Capire la tua assicurazione, in parole semplici</p>
+    </div>
+    <span class="text-xs bg-blue-900 px-3 py-2 rounded-lg text-blue-300 max-w-xs text-right hidden sm:block">
+      Questo strumento spiega il documento. Non fornisce consulenza assicurativa.
+    </span>
+  </header>
+
+  <!-- Main layout -->
+  <main class="flex flex-1 overflow-hidden">
+
+    <!-- LEFT: PDF viewer -->
+    <section class="w-2/5 border-r border-gray-200 flex flex-col bg-white overflow-hidden">
+
+      <!-- Upload area (shown when no PDF loaded) -->
+      <div id="upload-area"
+        class="flex flex-col items-center justify-center flex-1 p-8 text-center cursor-pointer border-4 border-dashed border-blue-300 m-4 rounded-xl hover:bg-blue-50 transition-colors"
+        onclick="document.getElementById('file-input').click()">
+        <div class="text-6xl mb-4">📄</div>
+        <p class="text-xl font-semibold text-blue-700">Carica il set informativo</p>
+        <p class="text-gray-500 mt-2 text-base">Clicca qui o trascina il PDF</p>
+        <input type="file" id="file-input" accept=".pdf" class="hidden" onchange="handleUpload(event)" />
+      </div>
+
+      <!-- PDF preview (shown after upload) -->
+      <div id="pdf-preview" class="hidden flex-col flex-1 overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-b flex-shrink-0">
+          <span id="filename-label" class="text-sm font-medium text-gray-700 truncate"></span>
+          <button onclick="resetUpload()" class="text-xs text-gray-400 hover:text-red-500 ml-2 flex-shrink-0">✕ Rimuovi</button>
+        </div>
+        <div class="flex-1 overflow-hidden">
+          <iframe id="pdf-iframe"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Analysis + Chat -->
+    <section class="w-3/5 flex flex-col overflow-hidden">
+
+      <!-- Action bar -->
+      <div class="flex gap-3 px-4 py-3 border-b bg-white flex-shrink-0 items-center overflow-x-auto">
+        <button id="btn-analyze" onclick="analyzeDocument()" disabled
+          class="bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-40 hover:bg-blue-800 transition text-base flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+          🔍 Analizza Documento
+        </button>
+        <button id="btn-carta" onclick="generaCarta()" disabled
+          class="bg-green-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-40 hover:bg-green-800 transition text-base flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+          🖨️ Genera Carta della Polizza
+        </button>
+      </div>
+
+      <!-- Loading banner (rotating messages during long-running analysis) -->
+      <div id="loading" class="hidden items-center gap-3 px-4 py-3 bg-blue-50 border-b border-blue-200 text-blue-700 text-sm flex-shrink-0">
+        <svg class="spin h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8v8H4z"/>
+        </svg>
+        <span id="loading-text">📖 Sto aprendo il documento…</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="flex border-b bg-white flex-shrink-0 overflow-x-auto">
+        <button onclick="switchTab('coperture')" id="tab-coperture"
+          class="tab-btn tab-active px-5 py-3 text-sm border-b-2 whitespace-nowrap flex-shrink-0">✅ Cosa copre</button>
+        <button onclick="switchTab('esclusioni')" id="tab-esclusioni"
+          class="tab-btn px-5 py-3 text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap flex-shrink-0">❌ Esclusioni</button>
+        <button onclick="switchTab('sinistro')" id="tab-sinistro"
+          class="tab-btn px-5 py-3 text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap flex-shrink-0">🚨 Sinistro</button>
+        <button onclick="switchTab('costi')" id="tab-costi"
+          class="tab-btn px-5 py-3 text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap flex-shrink-0">💶 Costi</button>
+      </div>
+
+      <!-- Tab content area -->
+      <div class="flex-1 overflow-y-auto p-4" style="min-height: 140px;">
+
+        <!-- Empty state -->
+        <div id="content-empty" class="flex flex-col items-center justify-center h-full text-gray-400">
+          <div class="text-5xl mb-3">📋</div>
+          <p class="text-lg text-center">Carica il PDF e clicca<br/><strong>Analizza Documento</strong> per vedere il riepilogo</p>
+        </div>
+
+        <!-- Coperture -->
+        <div id="content-coperture" class="hidden space-y-2"></div>
+
+        <!-- Esclusioni -->
+        <div id="content-esclusioni" class="hidden space-y-2"></div>
+
+        <!-- Sinistro -->
+        <div id="content-sinistro" class="hidden space-y-0"></div>
+
+        <!-- Costi -->
+        <div id="content-costi" class="hidden"></div>
+      </div>
+
+      <!-- Chat -->
+      <div class="border-t bg-white flex flex-col" style="flex: 0 1 280px; min-height: 150px;">
+        <div class="px-4 py-2 bg-gray-50 border-b flex-shrink-0">
+          <p class="text-sm font-semibold text-gray-700">💬 Fai una domanda sulla tua polizza</p>
+          <p class="text-xs text-gray-400">Es: "Sono coperto per la fisioterapia?" · "Cosa faccio in caso di ricovero?"</p>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
+        <div class="p-3 border-t flex gap-2 flex-shrink-0">
+          <button onclick="toggleVoiceInput()" id="btn-mic" disabled
+            title="Fai la domanda a voce"
+            class="bg-gray-100 text-gray-600 disabled:opacity-40 px-3 py-2 rounded-lg hover:bg-gray-200 transition flex-shrink-0 text-lg">
+            🎤
+          </button>
+          <input id="chat-input" type="text" placeholder="Scrivi la tua domanda…"
+            class="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onkeydown="if(event.key==='Enter') sendMessage()"
+            disabled />
+          <button onclick="sendMessage()" id="btn-send" disabled
+            class="bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-40 hover:bg-blue-800 transition">
+            Invia
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Carta della Polizza modal -->
+  <div id="carta-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col" style="max-height: 90vh;">
+      <div class="flex justify-between items-center px-6 py-4 bg-blue-800 text-white flex-shrink-0">
+        <h2 class="text-xl font-bold">📋 La Mia Carta della Polizza</h2>
+        <button onclick="closeCarta()" class="text-white hover:text-blue-200 text-2xl leading-none">✕</button>
+      </div>
+      <div id="carta-content" class="p-6 overflow-y-auto flex-1"></div>
+      <div class="px-6 py-4 border-t flex gap-3 flex-shrink-0">
+        <button onclick="window.print()"
+          class="bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-800 transition">
+          🖨️ Stampa
+        </button>
+        <button onclick="closeCarta()"
+          class="border border-gray-300 px-5 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition">
+          Chiudi
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let analysisData = null;
+  let chatHistory = [];
+  let currentTab = 'coperture';
+
+  // ── Upload ──────────────────────────────────────────────────────────────────
+
+  function handleUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    // Show PDF in iframe via blob URL
+    const url = URL.createObjectURL(file);
+    document.getElementById('pdf-iframe').src = url;
+    document.getElementById('filename-label').textContent = file.name;
+    document.getElementById('upload-area').classList.add('hidden');
+    document.getElementById('pdf-preview').classList.remove('hidden');
+    document.getElementById('pdf-preview').classList.add('flex');
+    document.getElementById('btn-analyze').disabled = false;
+
+    // Upload to server for text extraction
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('/upload', { method: 'POST', body: formData }).catch(console.error);
+  }
+
+  function resetUpload() {
+    document.getElementById('upload-area').classList.remove('hidden');
+    document.getElementById('pdf-preview').classList.add('hidden');
+    document.getElementById('pdf-preview').classList.remove('flex');
+    document.getElementById('btn-analyze').disabled = true;
+    document.getElementById('btn-carta').disabled = true;
+    document.getElementById('chat-input').disabled = true;
+    document.getElementById('btn-send').disabled = true;
+    document.getElementById('btn-mic').disabled = true;
+    document.getElementById('file-input').value = '';
+    analysisData = null;
+    chatHistory = [];
+    showEmpty();
+  }
+
+  // ── Analyze ─────────────────────────────────────────────────────────────────
+
+  async function analyzeDocument() {
+    setLoading(true);
+    try {
+      const res = await fetch('/analyze', { method: 'POST' });
+      if (!res.ok) throw new Error(await res.text());
+      analysisData = await res.json();
+      renderAnalysis(analysisData);
+      document.getElementById('btn-carta').disabled = false;
+      document.getElementById('chat-input').disabled = false;
+      document.getElementById('btn-send').disabled = false;
+      document.getElementById('btn-mic').disabled = !speechSupported();
+      document.getElementById('content-empty').classList.add('hidden');
+      switchTab('coperture');
+    } catch (e) {
+      alert('Errore durante l\'analisi. Controlla che il server sia avviato e riprova.');
+      console.error(e);
+    }
+    setLoading(false);
+  }
+
+  const ANALYZE_MESSAGES = [
+    '📖 Sto aprendo il documento…',
+    '🔍 Sto individuando le coperture principali…',
+    '⚠️ Sto controllando le esclusioni importanti…',
+    '🚨 Sto ricostruendo la procedura in caso di sinistro…',
+    '💶 Sto calcolando premio, franchigia e massimale…',
+    '📝 Sto scrivendo i riferimenti a articoli e pagine…',
+    '✨ Ultimi dettagli, quasi pronto…',
+  ];
+  let loadingMessageTimer = null;
+
+  function setLoading(state) {
+    document.getElementById('btn-analyze').disabled = state;
+    const loading = document.getElementById('loading');
+    loading.classList.toggle('hidden', !state);
+    loading.classList.toggle('flex', state);
+
+    clearInterval(loadingMessageTimer);
+    if (state) {
+      let i = 0;
+      document.getElementById('loading-text').textContent = ANALYZE_MESSAGES[0];
+      loadingMessageTimer = setInterval(() => {
+        i = (i + 1) % ANALYZE_MESSAGES.length;
+        document.getElementById('loading-text').textContent = ANALYZE_MESSAGES[i];
+      }, 5000);
+    }
+  }
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  function renderAnalysis(data) {
+    // Coperture
+    document.getElementById('content-coperture').innerHTML =
+      (data.coperture || []).map(c => `
+        <div class="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+          <span class="text-green-600 text-xl mt-0.5 flex-shrink-0">✅</span>
+          <div>
+            <p class="font-semibold text-green-900 text-base">${esc(c.voce)}</p>
+            <p class="text-sm text-green-700 mt-0.5">${esc(c.dettaglio)}</p>
+            <p class="text-xs text-gray-400 mt-1">📄 ${esc(c.riferimento)}</p>
+          </div>
+        </div>`).join('');
+
+    // Esclusioni
+    document.getElementById('content-esclusioni').innerHTML =
+      `<div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-3 text-sm text-red-700">
+        ⚠️ Queste sono le cose che la polizza <strong>NON copre</strong>. Leggile con attenzione.
+      </div>` +
+      (data.esclusioni || []).map(e => `
+        <div class="p-3 bg-white border border-red-100 rounded-lg esclusione-${esc(e.impatto || 'medio')}">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-red-500 text-lg flex-shrink-0">❌</span>
+            <p class="font-semibold text-red-900 text-base">${esc(e.voce)}</p>
+            ${e.impatto === 'alto' ? '<span class="ml-auto text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">⚠️ Attenzione!</span>' : ''}
+          </div>
+          <p class="text-sm text-gray-700 mt-1 ml-7">${esc(e.dettaglio)}</p>
+          <p class="text-xs text-gray-400 mt-1 ml-7">📄 ${esc(e.riferimento)}</p>
+        </div>`).join('');
+
+    // Sinistro
+    document.getElementById('content-sinistro').innerHTML =
+      `<p class="font-semibold text-gray-700 mb-4">Cosa fare in caso di sinistro — segui i passi nell'ordine:</p>` +
+      (data.sinistro || []).map((s, i, arr) => `
+        <div class="flex gap-4 items-start ${i < arr.length - 1 ? 'pb-4 mb-4 border-b border-gray-100' : ''}">
+          <div class="flex-shrink-0 w-8 h-8 bg-blue-700 text-white rounded-full flex items-center justify-center font-bold text-sm">${s.passo}</div>
+          <div>
+            <p class="font-semibold text-base">${esc(s.azione)}</p>
+            <p class="text-sm text-gray-600 mt-0.5">${esc(s.dettaglio)}</p>
+          </div>
+        </div>`).join('');
+
+    // Costi
+    const c = data.costi || {};
+    const tiles = [
+      ['💶', 'Premio', c.premio],
+      ['🛡️', 'Franchigia', c.franchigia],
+      ['📊', 'Massimale', c.massimale],
+      ['📅', 'Pagamento', c.pagamento],
+    ].filter(([, , v]) => v);
+    document.getElementById('content-costi').innerHTML =
+      `<div class="grid grid-cols-2 gap-3">
+        ${tiles.map(([icon, label, value]) => `
+          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+            <p class="text-3xl mb-1">${icon}</p>
+            <p class="text-xs text-gray-500 uppercase tracking-wide">${label}</p>
+            <p class="font-semibold text-blue-900 mt-1 text-base">${esc(value)}</p>
+          </div>`).join('')}
+      </div>
+      ${c.riferimento ? `<p class="text-xs text-gray-400 mt-3">📄 ${esc(c.riferimento)}</p>` : ''}`;
+  }
+
+  // ── Tabs ────────────────────────────────────────────────────────────────────
+
+  function switchTab(name) {
+    ['coperture', 'esclusioni', 'sinistro', 'costi'].forEach(t => {
+      document.getElementById(`content-${t}`).classList.add('hidden');
+      const btn = document.getElementById(`tab-${t}`);
+      btn.classList.remove('tab-active');
+      btn.classList.add('text-gray-500');
+    });
+    document.getElementById(`content-${name}`).classList.remove('hidden');
+    const activeBtn = document.getElementById(`tab-${name}`);
+    activeBtn.classList.add('tab-active');
+    activeBtn.classList.remove('text-gray-500');
+    currentTab = name;
+  }
+
+  function showEmpty() {
+    document.getElementById('content-empty').classList.remove('hidden');
+    ['coperture', 'esclusioni', 'sinistro', 'costi'].forEach(t =>
+      document.getElementById(`content-${t}`).classList.add('hidden'));
+  }
+
+  // ── Chat ────────────────────────────────────────────────────────────────────
+
+  async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const msg = input.value.trim();
+    if (!msg) return;
+
+    input.value = '';
+    input.disabled = true;
+    document.getElementById('btn-send').disabled = true;
+
+    appendMessage('user', msg);
+    chatHistory.push({ role: 'user', content: msg });
+
+    // Typing indicator with rotating reassurance messages
+    const CHAT_WAIT_MESSAGES = [
+      '💬 Sto leggendo la tua domanda…',
+      '📖 Sto consultando il documento…',
+      '✍️ Sto preparando la risposta…',
+    ];
+    const typingId = 'typing-' + Date.now();
+    appendRaw(`<div id="${typingId}" class="flex justify-start">
+      <div class="bg-gray-100 text-gray-500 px-4 py-2 rounded-2xl rounded-bl-sm text-sm italic" id="${typingId}-text">${CHAT_WAIT_MESSAGES[0]}</div>
+    </div>`);
+    let waitIdx = 0;
+    const waitTimer = setInterval(() => {
+      waitIdx = (waitIdx + 1) % CHAT_WAIT_MESSAGES.length;
+      const el = document.getElementById(`${typingId}-text`);
+      if (el) el.textContent = CHAT_WAIT_MESSAGES[waitIdx];
+    }, 4000);
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg, history: chatHistory.slice(0, -1) }),
+      });
+      const data = await res.json();
+      clearInterval(waitTimer);
+      document.getElementById(typingId)?.remove();
+      appendMessage('assistant', data.response || data.error);
+      chatHistory.push({ role: 'assistant', content: data.response });
+    } catch {
+      clearInterval(waitTimer);
+      document.getElementById(typingId)?.remove();
+      appendMessage('assistant', 'Errore nella risposta. Riprova.');
+    }
+
+    input.disabled = false;
+    document.getElementById('btn-send').disabled = false;
+    input.focus();
+  }
+
+  function appendMessage(role, text) {
+    appendRaw(`
+      <div class="flex ${role === 'user' ? 'justify-end' : 'justify-start'}">
+        <div class="max-w-xs px-4 py-2 rounded-2xl text-sm leading-relaxed ${
+          role === 'user'
+            ? 'bg-blue-700 text-white rounded-br-sm'
+            : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+        }">${esc(text)}</div>
+      </div>`);
+  }
+
+  function appendRaw(html) {
+    const msgs = document.getElementById('chat-messages');
+    msgs.insertAdjacentHTML('beforeend', html);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  // ── Carta della Polizza ──────────────────────────────────────────────────────
+
+  function generaCarta() {
+    if (!analysisData) return;
+    const d = analysisData;
+
+    const topCop = (d.coperture || []).slice(0, 5)
+      .map(c => `<li class="flex gap-2"><span>✅</span><span>${esc(c.voce)}</span></li>`).join('');
+    const topExcl = (d.esclusioni || []).filter(e => e.impatto === 'alto').slice(0, 5)
+      .map(e => `<li class="flex gap-2"><span>❌</span><span>${esc(e.voce)}</span></li>`).join('');
+    const passo1 = d.sinistro?.[0];
+    const co = d.costi || {};
+
+    document.getElementById('carta-content').innerHTML = `
+      <div class="text-center mb-6 pb-4 border-b">
+        <div class="text-4xl mb-2">🛡️</div>
+        <h3 class="text-2xl font-bold text-blue-900">${esc(d.prodotto || 'La Mia Polizza')}</h3>
+        <p class="text-gray-400 text-sm mt-1">Riepilogo — ${new Date().toLocaleDateString('it-IT')}</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-4">
+        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+          <h4 class="font-bold text-green-800 mb-2 text-base">✅ Sono coperto per</h4>
+          <ul class="space-y-1 text-sm text-green-900">${topCop || '<li>Vedi sezione coperture</li>'}</ul>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
+          <h4 class="font-bold text-red-800 mb-2 text-base">❌ NON sono coperto per</h4>
+          <ul class="space-y-1 text-sm text-red-900">${topExcl || '<li>Vedi sezione esclusioni</li>'}</ul>
+        </div>
+      </div>
+
+      ${passo1 ? `
+      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
+        <h4 class="font-bold text-blue-800 mb-1 text-base">🚨 In caso di sinistro — prima cosa da fare</h4>
+        <p class="text-blue-900 text-sm">${esc(passo1.azione)} — ${esc(passo1.dettaglio)}</p>
+      </div>` : ''}
+
+      ${co.premio ? `
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm">
+        <h4 class="font-bold text-gray-700 mb-2">💶 Quanto pago</h4>
+        <p><strong>Premio:</strong> ${esc(co.premio)}
+          ${co.franchigia ? ` &nbsp;·&nbsp; <strong>Franchigia:</strong> ${esc(co.franchigia)}` : ''}
+          ${co.massimale  ? ` &nbsp;·&nbsp; <strong>Massimale:</strong> ${esc(co.massimale)}`  : ''}
+        </p>
+      </div>` : ''}
+
+      <p class="text-xs text-gray-400 mt-4 text-center">
+        Questo è un riepilogo semplificato. Fare sempre riferimento al set informativo originale per le condizioni complete.
+      </p>`;
+
+    document.getElementById('carta-modal').classList.remove('hidden');
+  }
+
+  function closeCarta() {
+    document.getElementById('carta-modal').classList.add('hidden');
+  }
+
+  // ── Voice input (Web Speech API) ─────────────────────────────────────────────
+
+  function speechSupported() {
+    return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+  }
+
+  let recognition = null;
+  let isListening = false;
+
+  function toggleVoiceInput() {
+    if (!speechSupported()) {
+      alert('Il riconoscimento vocale non è supportato su questo browser. Prova con Google Chrome.');
+      return;
+    }
+
+    if (isListening) {
+      recognition?.stop();
+      return;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'it-IT';
+    recognition.continuous = false;
+    recognition.interimResults = true;
+
+    const micBtn = document.getElementById('btn-mic');
+    const input = document.getElementById('chat-input');
+
+    isListening = true;
+    micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
+    micBtn.classList.remove('bg-gray-100', 'text-gray-600');
+    input.placeholder = '🎙️ Ti sto ascoltando…';
+
+    recognition.onresult = (event) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      input.value = transcript;
+    };
+
+    recognition.onerror = () => {
+      stopListening();
+    };
+
+    recognition.onend = () => {
+      const msg = input.value.trim();
+      stopListening();
+      if (msg) setTimeout(sendMessage, 300);
+    };
+
+    recognition.start();
+  }
+
+  function stopListening() {
+    isListening = false;
+    const micBtn = document.getElementById('btn-mic');
+    const input = document.getElementById('chat-input');
+    micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
+    micBtn.classList.add('bg-gray-100', 'text-gray-600');
+    input.placeholder = 'Scrivi la tua domanda…';
+  }
+
+  // ── Utils ───────────────────────────────────────────────────────────────────
+
+  function esc(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+</script>
+</body>
+</html>

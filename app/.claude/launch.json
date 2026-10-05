@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Leggi la Polizza",
+      "runtimeExecutable": "C:\\Users\\antonella.pagano\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "main:app", "--reload", "--port", "8080"],
+      "port": 8080
+    }
+  ]
+}
