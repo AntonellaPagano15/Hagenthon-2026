@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI(title="Leggi la Polizza per Me")
+app = FastAPI(title="Polizza in Chiaro")
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,12 +18,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CLAUDE_CLI = os.path.expandvars(r"%USERPROFILE%\.local\bin\claude.exe")
 
 # In-memory store (single-user prototype)
 document_store: dict = {"text": "", "filename": ""}
 
-ANALYZE_SYSTEM = """Sei un esperto di polizze assicurative salute/vita italiano.
+ANALYZE_SYSTEM = """Sei un esperto di polizze assicurative italiane (salute, vita, auto, casa, infortuni e altri rami).
 Analizza il set informativo fornito e restituisci un JSON con questa struttura esatta:
 {
   "prodotto": "nome del prodotto assicurativo",
@@ -34,8 +35,8 @@ Analizza il set informativo fornito e restituisci un JSON con questa struttura e
 }
 Usa frasi brevi (max 15 parole per voce). Rispondi SOLO con JSON valido, senza blocchi markdown, nessun testo aggiuntivo."""
 
-CHAT_SYSTEM = """Sei un assistente che aiuta persone anziane o con bassa alfabetizzazione finanziaria
-a capire la loro polizza assicurativa.
+CHAT_SYSTEM = """Sei un assistente che aiuta chiunque fatichi a comprendere un testo complesso — per età
+avanzata, giovane età, disabilità visive o bassa alfabetizzazione — a capire la propria polizza assicurativa.
 
 REGOLE:
 - Rispondi in massimo 3 frasi semplici e chiare
@@ -73,7 +74,7 @@ def strip_code_fence(text: str) -> str:
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
-    with open("static/index.html", encoding="utf-8") as f:
+    with open(os.path.join(BASE_DIR, "static", "index.html"), encoding="utf-8") as f:
         return f.read()
 
 
@@ -167,4 +168,4 @@ NUOVA DOMANDA DELL'UTENTE:
     return JSONResponse({"response": response_text})
 
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")

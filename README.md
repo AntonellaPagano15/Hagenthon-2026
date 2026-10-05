@@ -1,19 +1,19 @@
-# Leggi la Polizza per Me
+# Polizza in Chiaro
 
 **Hagenthon 2026 · Tema 01 — Accessibilità Digitale**
 
-Un agente che legge il set informativo di una polizza salute/vita al posto
+Un agente che legge il set informativo di qualsiasi polizza al posto
 dell'utente, risponde a domande specifiche citando sempre la fonte (articolo
 o pagina), e genera un riepilogo di una pagina — la **Carta della Polizza** —
 da tenere a portata di mano.
 
 ## Il problema
 
-Una persona anziana o con bassa alfabetizzazione assicurativa riceve il set
-informativo di una polizza (40-100+ pagine di linguaggio legale) e non riesce
-a capire cosa è davvero coperto, quali sono le esclusioni più importanti, né
-cosa fare in caso di sinistro. Rinuncia a leggere, oppure firma senza aver
-capito.
+Chiunque fatichi a comprendere un testo complesso — per età avanzata, giovane
+età, disabilità visive o bassa alfabetizzazione — riceve il set informativo
+di una polizza (40-100+ pagine di linguaggio legale) e non riesce a capire
+cosa è davvero coperto, quali sono le esclusioni più importanti, né cosa fare
+in caso di sinistro. Rinuncia a leggere, oppure firma senza aver capito.
 
 ## La soluzione
 

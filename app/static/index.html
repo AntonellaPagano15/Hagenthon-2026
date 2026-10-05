@@ -3,29 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leggi la Polizza per Me</title>
+  <title>Polizza in Chiaro</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body { font-size: 18px; }
+    :root {
+      --ink: #18181B;
+      --muted: #52525B;
+      --faint: #A1A1AA;
+      --surface-alt: #FAFAFA;
+      --surface-muted: #F4F4F5;
+      --border: #E4E4E7;
+      --primary: #7C3AED;
+      --primary-hover: #6D28D9;
+      --primary-dark: #4C1D95;
+      --primary-soft: #F5F3FF;
+      --primary-soft-border: #DDD6FE;
+      --success: #059669;
+      --success-ink: #065F46;
+      --success-soft: #ECFDF5;
+      --success-border: #A7F3D0;
+      --danger: #E11D48;
+      --danger-ink: #9F1239;
+      --danger-soft: #FFF1F2;
+      --danger-border: #FECDD3;
+      --warning: #D97706;
+    }
+    html { font-size: 112.5%; } /* 18px base: scala Tailwind più leggibile */
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink);
+    }
     #pdf-iframe { width: 100%; height: 100%; border: none; }
-    .tab-active { color: #1d4ed8; border-bottom: 3px solid #1d4ed8; font-weight: 700; }
-    .esclusione-alto  { border-left: 4px solid #dc2626; }
-    .esclusione-medio { border-left: 4px solid #f59e0b; }
-    .esclusione-basso { border-left: 4px solid #9ca3af; }
+    .tab-btn { color: var(--muted); font-weight: 500; }
+    .tab-btn:hover { color: var(--ink); }
+    .tab-active {
+      background: #fff; color: var(--primary); font-weight: 700;
+      box-shadow: 0 1px 2px rgba(24,24,27,0.08);
+    }
+    .esclusione-alto  { border-left: 4px solid var(--danger); }
+    .esclusione-medio { border-left: 4px solid var(--warning); }
+    .esclusione-basso { border-left: 4px solid var(--faint); }
     @keyframes spin { to { transform: rotate(360deg); } }
     .spin { animation: spin 1s linear infinite; }
+    .btn-primary {
+      background: var(--primary); color: #fff;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #fff; color: var(--primary); border: 1.5px solid var(--primary-soft-border);
+    }
+    .btn-secondary:hover:not(:disabled) { background: var(--primary-soft); }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900 flex flex-col h-screen overflow-hidden">
+<body class="bg-[var(--surface-alt)] flex flex-col h-screen overflow-hidden">
 
   <!-- Header -->
-  <header class="bg-blue-800 text-white px-6 py-3 flex items-center justify-between shadow-lg flex-shrink-0">
-    <div>
-      <h1 class="text-xl font-bold leading-tight">🛡️ Leggi la Polizza per Me</h1>
-      <p class="text-blue-300 text-xs mt-0.5">Capire la tua assicurazione, in parole semplici</p>
+  <header class="px-6 py-4 flex items-center justify-between flex-shrink-0" style="background: var(--primary-dark);">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-xl flex-shrink-0">💡</div>
+      <div>
+        <h1 class="text-xl font-bold leading-tight text-white">Polizza in Chiaro</h1>
+        <p class="text-white/70 text-sm mt-0.5">Capire la tua assicurazione, in parole semplici</p>
+      </div>
     </div>
-    <span class="text-xs bg-blue-900 px-3 py-2 rounded-lg text-blue-300 max-w-xs text-right hidden sm:block">
-      Questo strumento spiega il documento. Non fornisce consulenza assicurativa.
+    <span class="text-xs text-white/60 max-w-xs text-right hidden sm:block leading-relaxed">
+      Questo strumento spiega il documento.<br/>Non fornisce consulenza assicurativa.
     </span>
   </header>
 
@@ -33,23 +78,23 @@
   <main class="flex flex-1 overflow-hidden">
 
     <!-- LEFT: PDF viewer -->
-    <section class="w-2/5 border-r border-gray-200 flex flex-col bg-white overflow-hidden">
+    <section class="w-2/5 border-r border-[var(--border)] flex flex-col bg-white overflow-hidden">
 
       <!-- Upload area (shown when no PDF loaded) -->
       <div id="upload-area"
-        class="flex flex-col items-center justify-center flex-1 p-8 text-center cursor-pointer border-4 border-dashed border-blue-300 m-4 rounded-xl hover:bg-blue-50 transition-colors"
+        class="flex flex-col items-center justify-center flex-1 p-8 text-center cursor-pointer border-2 border-dashed border-[var(--primary-soft-border)] m-4 rounded-2xl hover:bg-[var(--primary-soft)] transition-colors"
         onclick="document.getElementById('file-input').click()">
         <div class="text-6xl mb-4">📄</div>
-        <p class="text-xl font-semibold text-blue-700">Carica il set informativo</p>
-        <p class="text-gray-500 mt-2 text-base">Clicca qui o trascina il PDF</p>
+        <p class="text-xl font-semibold text-[var(--primary)]">Carica il set informativo</p>
+        <p class="text-[var(--muted)] mt-2 text-base">Clicca qui o trascina il PDF</p>
         <input type="file" id="file-input" accept=".pdf" class="hidden" onchange="handleUpload(event)" />
       </div>
 
       <!-- PDF preview (shown after upload) -->
       <div id="pdf-preview" class="hidden flex-col flex-1 overflow-hidden">
-        <div class="flex items-center justify-between px-4 py-2 bg-gray-100 border-b flex-shrink-0">
-          <span id="filename-label" class="text-sm font-medium text-gray-700 truncate"></span>
-          <button onclick="resetUpload()" class="text-xs text-gray-400 hover:text-red-500 ml-2 flex-shrink-0">✕ Rimuovi</button>
+        <div class="flex items-center justify-between px-4 py-3 bg-[var(--surface-muted)] border-b border-[var(--border)] flex-shrink-0">
+          <span id="filename-label" class="text-sm font-medium text-[var(--ink)] truncate"></span>
+          <button onclick="resetUpload()" class="text-xs text-[var(--faint)] hover:text-[var(--danger)] ml-2 flex-shrink-0 transition">✕ Rimuovi</button>
         </div>
         <div class="flex-1 overflow-hidden">
           <iframe id="pdf-iframe"></iframe>
@@ -61,44 +106,46 @@
     <section class="w-3/5 flex flex-col overflow-hidden">
 
       <!-- Action bar -->
-      <div class="flex gap-3 px-4 py-3 border-b bg-white flex-shrink-0 items-center overflow-x-auto">
+      <div class="flex gap-3 px-4 py-3 border-b border-[var(--border)] bg-white flex-shrink-0 items-center overflow-x-auto">
         <button id="btn-analyze" onclick="analyzeDocument()" disabled
-          class="bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-40 hover:bg-blue-800 transition text-base flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+          class="btn-primary px-5 py-2.5 rounded-xl font-semibold disabled:opacity-40 transition text-base flex items-center gap-2 whitespace-nowrap flex-shrink-0">
           🔍 Analizza Documento
         </button>
         <button id="btn-carta" onclick="generaCarta()" disabled
-          class="bg-green-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-40 hover:bg-green-800 transition text-base flex items-center gap-2 whitespace-nowrap flex-shrink-0">
+          class="btn-secondary px-5 py-2.5 rounded-xl font-semibold disabled:opacity-40 transition text-base flex items-center gap-2 whitespace-nowrap flex-shrink-0">
           🖨️ Genera Carta della Polizza
         </button>
       </div>
 
       <!-- Loading banner (rotating messages during long-running analysis) -->
-      <div id="loading" class="hidden items-center gap-3 px-4 py-3 bg-blue-50 border-b border-blue-200 text-blue-700 text-sm flex-shrink-0">
+      <div id="loading" class="hidden items-center gap-3 px-4 py-3 bg-[var(--primary-soft)] border-b border-[var(--primary-soft-border)] text-[var(--primary-hover)] text-sm flex-shrink-0">
         <svg class="spin h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8v8H4z"/>
         </svg>
-        <span id="loading-text">📖 Sto aprendo il documento…</span>
+        <span id="loading-text" class="font-medium">📖 Sto aprendo il documento…</span>
       </div>
 
-      <!-- Tabs -->
-      <div class="flex border-b bg-white flex-shrink-0 overflow-x-auto">
-        <button onclick="switchTab('coperture')" id="tab-coperture"
-          class="tab-btn tab-active px-5 py-3 text-sm border-b-2 whitespace-nowrap flex-shrink-0">✅ Cosa copre</button>
-        <button onclick="switchTab('esclusioni')" id="tab-esclusioni"
-          class="tab-btn px-5 py-3 text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap flex-shrink-0">❌ Esclusioni</button>
-        <button onclick="switchTab('sinistro')" id="tab-sinistro"
-          class="tab-btn px-5 py-3 text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap flex-shrink-0">🚨 Sinistro</button>
-        <button onclick="switchTab('costi')" id="tab-costi"
-          class="tab-btn px-5 py-3 text-sm text-gray-500 hover:text-gray-800 whitespace-nowrap flex-shrink-0">💶 Costi</button>
+      <!-- Tabs (segmented control) -->
+      <div class="px-4 pt-3 pb-2 bg-white flex-shrink-0 border-b border-[var(--border)]">
+        <div class="inline-flex gap-1 p-1 bg-[var(--surface-muted)] rounded-xl overflow-x-auto max-w-full">
+          <button onclick="switchTab('coperture')" id="tab-coperture"
+            class="tab-btn tab-active px-4 py-2 rounded-lg text-base whitespace-nowrap flex-shrink-0 transition">✅ Cosa copre</button>
+          <button onclick="switchTab('esclusioni')" id="tab-esclusioni"
+            class="tab-btn px-4 py-2 rounded-lg text-base whitespace-nowrap flex-shrink-0 transition">❌ Esclusioni</button>
+          <button onclick="switchTab('sinistro')" id="tab-sinistro"
+            class="tab-btn px-4 py-2 rounded-lg text-base whitespace-nowrap flex-shrink-0 transition">🚨 Sinistro</button>
+          <button onclick="switchTab('costi')" id="tab-costi"
+            class="tab-btn px-4 py-2 rounded-lg text-base whitespace-nowrap flex-shrink-0 transition">💶 Costi</button>
+        </div>
       </div>
 
       <!-- Tab content area -->
       <div class="flex-1 overflow-y-auto p-4" style="min-height: 140px;">
 
         <!-- Empty state -->
-        <div id="content-empty" class="flex flex-col items-center justify-center h-full text-gray-400">
+        <div id="content-empty" class="flex flex-col items-center justify-center h-full text-[var(--faint)]">
           <div class="text-5xl mb-3">📋</div>
-          <p class="text-lg text-center">Carica il PDF e clicca<br/><strong>Analizza Documento</strong> per vedere il riepilogo</p>
+          <p class="text-lg text-center">Carica il PDF e clicca<br/><strong class="text-[var(--muted)]">Analizza Documento</strong> per vedere il riepilogo</p>
         </div>
 
         <!-- Coperture -->
@@ -115,24 +162,24 @@
       </div>
 
       <!-- Chat -->
-      <div class="border-t bg-white flex flex-col" style="flex: 0 1 280px; min-height: 150px;">
-        <div class="px-4 py-2 bg-gray-50 border-b flex-shrink-0">
-          <p class="text-sm font-semibold text-gray-700">💬 Fai una domanda sulla tua polizza</p>
-          <p class="text-xs text-gray-400">Es: "Sono coperto per la fisioterapia?" · "Cosa faccio in caso di ricovero?"</p>
+      <div class="border-t border-[var(--border)] bg-white flex flex-col" style="flex: 0 1 280px; min-height: 150px;">
+        <div class="px-4 py-2.5 bg-[var(--surface-alt)] border-b border-[var(--border)] flex-shrink-0">
+          <p class="text-sm font-semibold text-[var(--ink)]">💬 Fai una domanda sulla tua polizza</p>
+          <p class="text-xs text-[var(--faint)]">Es: "Sono coperto per la fisioterapia?" · "Cosa faccio in caso di ricovero?"</p>
         </div>
         <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3"></div>
-        <div class="p-3 border-t flex gap-2 flex-shrink-0">
+        <div class="p-3 border-t border-[var(--border)] flex gap-2 flex-shrink-0">
           <button onclick="toggleVoiceInput()" id="btn-mic" disabled
             title="Fai la domanda a voce"
-            class="bg-gray-100 text-gray-600 disabled:opacity-40 px-3 py-2 rounded-lg hover:bg-gray-200 transition flex-shrink-0 text-lg">
+            class="bg-[var(--surface-muted)] text-[var(--muted)] disabled:opacity-40 px-3 py-2 rounded-xl hover:bg-[var(--border)] transition flex-shrink-0 text-lg">
             🎤
           </button>
           <input id="chat-input" type="text" placeholder="Scrivi la tua domanda…"
-            class="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-blue-400"
+            class="flex-1 border border-[var(--border)] rounded-xl px-4 py-2 text-base focus:outline-none focus:ring-2 focus:ring-[var(--primary-soft-border)] focus:border-[var(--primary)]"
             onkeydown="if(event.key==='Enter') sendMessage()"
             disabled />
           <button onclick="sendMessage()" id="btn-send" disabled
-            class="bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold disabled:opacity-40 hover:bg-blue-800 transition">
+            class="btn-primary px-5 py-2 rounded-xl font-semibold disabled:opacity-40 transition">
             Invia
           </button>
         </div>
@@ -141,20 +188,20 @@
   </main>
 
   <!-- Carta della Polizza modal -->
-  <div id="carta-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+  <div id="carta-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
     <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col" style="max-height: 90vh;">
-      <div class="flex justify-between items-center px-6 py-4 bg-blue-800 text-white flex-shrink-0">
+      <div class="flex justify-between items-center px-6 py-4 bg-[var(--primary)] text-white flex-shrink-0">
         <h2 class="text-xl font-bold">📋 La Mia Carta della Polizza</h2>
-        <button onclick="closeCarta()" class="text-white hover:text-blue-200 text-2xl leading-none">✕</button>
+        <button onclick="closeCarta()" class="text-white/80 hover:text-white text-2xl leading-none transition">✕</button>
       </div>
       <div id="carta-content" class="p-6 overflow-y-auto flex-1"></div>
-      <div class="px-6 py-4 border-t flex gap-3 flex-shrink-0">
+      <div class="px-6 py-4 border-t border-[var(--border)] flex gap-3 flex-shrink-0">
         <button onclick="window.print()"
-          class="bg-blue-700 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-800 transition">
+          class="btn-primary px-5 py-2.5 rounded-xl font-semibold transition">
           🖨️ Stampa
         </button>
         <button onclick="closeCarta()"
-          class="border border-gray-300 px-5 py-2 rounded-lg font-semibold text-gray-600 hover:bg-gray-50 transition">
+          class="border border-[var(--border)] px-5 py-2.5 rounded-xl font-semibold text-[var(--muted)] hover:bg-[var(--surface-alt)] transition">
           Chiudi
         </button>
       </div>
@@ -258,40 +305,40 @@
     // Coperture
     document.getElementById('content-coperture').innerHTML =
       (data.coperture || []).map(c => `
-        <div class="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <span class="text-green-600 text-xl mt-0.5 flex-shrink-0">✅</span>
+        <div class="flex items-start gap-3 p-3 rounded-xl" style="background:var(--success-soft); border-left:4px solid var(--success);">
+          <span class="text-xl mt-0.5 flex-shrink-0">✅</span>
           <div>
-            <p class="font-semibold text-green-900 text-base">${esc(c.voce)}</p>
-            <p class="text-sm text-green-700 mt-0.5">${esc(c.dettaglio)}</p>
-            <p class="text-xs text-gray-400 mt-1">📄 ${esc(c.riferimento)}</p>
+            <p class="font-semibold text-base" style="color:var(--success-ink);">${esc(c.voce)}</p>
+            <p class="text-sm mt-0.5" style="color:var(--success);">${esc(c.dettaglio)}</p>
+            <p class="text-xs text-[var(--faint)] mt-1">📄 ${esc(c.riferimento)}</p>
           </div>
         </div>`).join('');
 
     // Esclusioni
     document.getElementById('content-esclusioni').innerHTML =
-      `<div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-3 text-sm text-red-700">
+      `<div class="rounded-xl p-3 mb-3 text-sm" style="background:var(--danger-soft); color:var(--danger-ink);">
         ⚠️ Queste sono le cose che la polizza <strong>NON copre</strong>. Leggile con attenzione.
       </div>` +
       (data.esclusioni || []).map(e => `
-        <div class="p-3 bg-white border border-red-100 rounded-lg esclusione-${esc(e.impatto || 'medio')}">
+        <div class="p-3 bg-white rounded-xl shadow-sm esclusione-${esc(e.impatto || 'medio')}">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="text-red-500 text-lg flex-shrink-0">❌</span>
-            <p class="font-semibold text-red-900 text-base">${esc(e.voce)}</p>
-            ${e.impatto === 'alto' ? '<span class="ml-auto text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">⚠️ Attenzione!</span>' : ''}
+            <span class="text-lg flex-shrink-0">❌</span>
+            <p class="font-semibold text-base" style="color:var(--danger-ink);">${esc(e.voce)}</p>
+            ${e.impatto === 'alto' ? '<span class="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full" style="background:var(--danger-soft); color:var(--danger);">⚠️ Attenzione!</span>' : ''}
           </div>
-          <p class="text-sm text-gray-700 mt-1 ml-7">${esc(e.dettaglio)}</p>
-          <p class="text-xs text-gray-400 mt-1 ml-7">📄 ${esc(e.riferimento)}</p>
+          <p class="text-sm text-[var(--muted)] mt-1 ml-7">${esc(e.dettaglio)}</p>
+          <p class="text-xs text-[var(--faint)] mt-1 ml-7">📄 ${esc(e.riferimento)}</p>
         </div>`).join('');
 
     // Sinistro
     document.getElementById('content-sinistro').innerHTML =
-      `<p class="font-semibold text-gray-700 mb-4">Cosa fare in caso di sinistro — segui i passi nell'ordine:</p>` +
+      `<p class="font-semibold text-[var(--ink)] mb-4">Cosa fare in caso di sinistro — segui i passi nell'ordine:</p>` +
       (data.sinistro || []).map((s, i, arr) => `
-        <div class="flex gap-4 items-start ${i < arr.length - 1 ? 'pb-4 mb-4 border-b border-gray-100' : ''}">
-          <div class="flex-shrink-0 w-8 h-8 bg-blue-700 text-white rounded-full flex items-center justify-center font-bold text-sm">${s.passo}</div>
+        <div class="flex gap-4 items-start ${i < arr.length - 1 ? 'pb-4 mb-4 border-b border-[var(--border)]' : ''}">
+          <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm text-white" style="background:var(--primary);">${s.passo}</div>
           <div>
-            <p class="font-semibold text-base">${esc(s.azione)}</p>
-            <p class="text-sm text-gray-600 mt-0.5">${esc(s.dettaglio)}</p>
+            <p class="font-semibold text-base text-[var(--ink)]">${esc(s.azione)}</p>
+            <p class="text-sm text-[var(--muted)] mt-0.5">${esc(s.dettaglio)}</p>
           </div>
         </div>`).join('');
 
@@ -306,13 +353,13 @@
     document.getElementById('content-costi').innerHTML =
       `<div class="grid grid-cols-2 gap-3">
         ${tiles.map(([icon, label, value]) => `
-          <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div class="rounded-xl p-4" style="background:var(--primary-soft); border:1px solid var(--primary-soft-border);">
             <p class="text-3xl mb-1">${icon}</p>
-            <p class="text-xs text-gray-500 uppercase tracking-wide">${label}</p>
-            <p class="font-semibold text-blue-900 mt-1 text-base">${esc(value)}</p>
+            <p class="text-xs text-[var(--muted)] uppercase tracking-wide">${label}</p>
+            <p class="font-semibold mt-1 text-base" style="color:var(--primary-hover);">${esc(value)}</p>
           </div>`).join('')}
       </div>
-      ${c.riferimento ? `<p class="text-xs text-gray-400 mt-3">📄 ${esc(c.riferimento)}</p>` : ''}`;
+      ${c.riferimento ? `<p class="text-xs text-[var(--faint)] mt-3">📄 ${esc(c.riferimento)}</p>` : ''}`;
   }
 
   // ── Tabs ────────────────────────────────────────────────────────────────────
@@ -320,14 +367,10 @@
   function switchTab(name) {
     ['coperture', 'esclusioni', 'sinistro', 'costi'].forEach(t => {
       document.getElementById(`content-${t}`).classList.add('hidden');
-      const btn = document.getElementById(`tab-${t}`);
-      btn.classList.remove('tab-active');
-      btn.classList.add('text-gray-500');
+      document.getElementById(`tab-${t}`).classList.remove('tab-active');
     });
     document.getElementById(`content-${name}`).classList.remove('hidden');
-    const activeBtn = document.getElementById(`tab-${name}`);
-    activeBtn.classList.add('tab-active');
-    activeBtn.classList.remove('text-gray-500');
+    document.getElementById(`tab-${name}`).classList.add('tab-active');
     currentTab = name;
   }
 
@@ -359,7 +402,7 @@
     ];
     const typingId = 'typing-' + Date.now();
     appendRaw(`<div id="${typingId}" class="flex justify-start">
-      <div class="bg-gray-100 text-gray-500 px-4 py-2 rounded-2xl rounded-bl-sm text-sm italic" id="${typingId}-text">${CHAT_WAIT_MESSAGES[0]}</div>
+      <div class="bg-[var(--surface-muted)] text-[var(--muted)] px-4 py-2 rounded-2xl rounded-bl-sm text-sm italic" id="${typingId}-text">${CHAT_WAIT_MESSAGES[0]}</div>
     </div>`);
     let waitIdx = 0;
     const waitTimer = setInterval(() => {
@@ -390,15 +433,53 @@
     input.focus();
   }
 
+  let ttsMessages = {};
+  let ttsMsgCounter = 0;
+
   function appendMessage(role, text) {
+    let speakerBtn = '';
+    if (role === 'assistant') {
+      const msgId = 'tts-' + (ttsMsgCounter++);
+      ttsMessages[msgId] = text;
+      speakerBtn = `<button id="${msgId}-btn" onclick="speakMessage('${msgId}')"
+        class="flex-shrink-0 text-[var(--faint)] hover:text-[var(--primary)] transition text-base self-end mb-1"
+        title="Ascolta la risposta">🔊</button>`;
+    }
     appendRaw(`
-      <div class="flex ${role === 'user' ? 'justify-end' : 'justify-start'}">
+      <div class="flex ${role === 'user' ? 'justify-end' : 'justify-start'} items-end gap-1">
+        ${role === 'assistant' ? speakerBtn : ''}
         <div class="max-w-xs px-4 py-2 rounded-2xl text-sm leading-relaxed ${
           role === 'user'
-            ? 'bg-blue-700 text-white rounded-br-sm'
-            : 'bg-gray-100 text-gray-800 rounded-bl-sm'
-        }">${esc(text)}</div>
+            ? 'text-white rounded-br-sm'
+            : 'bg-[var(--surface-muted)] text-[var(--ink)] rounded-bl-sm'
+        }" ${role === 'user' ? 'style="background:var(--primary);"' : ''}>${esc(text)}</div>
       </div>`);
+  }
+
+  function speakMessage(msgId) {
+    const text = ttsMessages[msgId];
+    if (!text) return;
+
+    if (!('speechSynthesis' in window)) {
+      alert('La lettura ad alta voce non è supportata su questo browser. Prova con Google Chrome.');
+      return;
+    }
+
+    const btn = document.getElementById(`${msgId}-btn`);
+
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      if (btn) btn.textContent = '🔊';
+      return;
+    }
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'it-IT';
+    utterance.rate = 0.95;
+    utterance.onstart = () => { if (btn) btn.textContent = '⏸️'; };
+    utterance.onend = () => { if (btn) btn.textContent = '🔊'; };
+    utterance.onerror = () => { if (btn) btn.textContent = '🔊'; };
+    window.speechSynthesis.speak(utterance);
   }
 
   function appendRaw(html) {
@@ -421,39 +502,39 @@
     const co = d.costi || {};
 
     document.getElementById('carta-content').innerHTML = `
-      <div class="text-center mb-6 pb-4 border-b">
+      <div class="text-center mb-6 pb-4 border-b border-[var(--border)]">
         <div class="text-4xl mb-2">🛡️</div>
-        <h3 class="text-2xl font-bold text-blue-900">${esc(d.prodotto || 'La Mia Polizza')}</h3>
-        <p class="text-gray-400 text-sm mt-1">Riepilogo — ${new Date().toLocaleDateString('it-IT')}</p>
+        <h3 class="text-2xl font-bold" style="color:var(--primary-hover);">${esc(d.prodotto || 'La Mia Polizza')}</h3>
+        <p class="text-[var(--faint)] text-sm mt-1">Riepilogo — ${new Date().toLocaleDateString('it-IT')}</p>
       </div>
 
       <div class="grid grid-cols-2 gap-4 mb-4">
-        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
-          <h4 class="font-bold text-green-800 mb-2 text-base">✅ Sono coperto per</h4>
-          <ul class="space-y-1 text-sm text-green-900">${topCop || '<li>Vedi sezione coperture</li>'}</ul>
+        <div class="rounded-xl p-4" style="background:var(--success-soft);">
+          <h4 class="font-bold mb-2 text-base" style="color:var(--success-ink);">✅ Sono coperto per</h4>
+          <ul class="space-y-1 text-sm" style="color:var(--success-ink);">${topCop || '<li>Vedi sezione coperture</li>'}</ul>
         </div>
-        <div class="bg-red-50 border border-red-200 rounded-xl p-4">
-          <h4 class="font-bold text-red-800 mb-2 text-base">❌ NON sono coperto per</h4>
-          <ul class="space-y-1 text-sm text-red-900">${topExcl || '<li>Vedi sezione esclusioni</li>'}</ul>
+        <div class="rounded-xl p-4" style="background:var(--danger-soft);">
+          <h4 class="font-bold mb-2 text-base" style="color:var(--danger-ink);">❌ NON sono coperto per</h4>
+          <ul class="space-y-1 text-sm" style="color:var(--danger-ink);">${topExcl || '<li>Vedi sezione esclusioni</li>'}</ul>
         </div>
       </div>
 
       ${passo1 ? `
-      <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-4">
-        <h4 class="font-bold text-blue-800 mb-1 text-base">🚨 In caso di sinistro — prima cosa da fare</h4>
-        <p class="text-blue-900 text-sm">${esc(passo1.azione)} — ${esc(passo1.dettaglio)}</p>
+      <div class="rounded-xl p-4 mb-4" style="background:var(--primary-soft);">
+        <h4 class="font-bold mb-1 text-base" style="color:var(--primary-hover);">🚨 In caso di sinistro — prima cosa da fare</h4>
+        <p class="text-sm" style="color:var(--primary-hover);">${esc(passo1.azione)} — ${esc(passo1.dettaglio)}</p>
       </div>` : ''}
 
       ${co.premio ? `
-      <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 text-sm">
-        <h4 class="font-bold text-gray-700 mb-2">💶 Quanto pago</h4>
-        <p><strong>Premio:</strong> ${esc(co.premio)}
-          ${co.franchigia ? ` &nbsp;·&nbsp; <strong>Franchigia:</strong> ${esc(co.franchigia)}` : ''}
-          ${co.massimale  ? ` &nbsp;·&nbsp; <strong>Massimale:</strong> ${esc(co.massimale)}`  : ''}
+      <div class="rounded-xl p-4 text-sm" style="background:var(--surface-muted);">
+        <h4 class="font-bold text-[var(--ink)] mb-2">💶 Quanto pago</h4>
+        <p class="text-[var(--muted)]"><strong class="text-[var(--ink)]">Premio:</strong> ${esc(co.premio)}
+          ${co.franchigia ? ` &nbsp;·&nbsp; <strong class="text-[var(--ink)]">Franchigia:</strong> ${esc(co.franchigia)}` : ''}
+          ${co.massimale  ? ` &nbsp;·&nbsp; <strong class="text-[var(--ink)]">Massimale:</strong> ${esc(co.massimale)}`  : ''}
         </p>
       </div>` : ''}
 
-      <p class="text-xs text-gray-400 mt-4 text-center">
+      <p class="text-xs text-[var(--faint)] mt-4 text-center">
         Questo è un riepilogo semplificato. Fare sempre riferimento al set informativo originale per le condizioni complete.
       </p>`;
 
@@ -494,8 +575,8 @@
     const input = document.getElementById('chat-input');
 
     isListening = true;
-    micBtn.classList.add('bg-red-500', 'text-white', 'animate-pulse');
-    micBtn.classList.remove('bg-gray-100', 'text-gray-600');
+    micBtn.classList.add('bg-[var(--danger)]', 'text-white', 'animate-pulse');
+    micBtn.classList.remove('bg-[var(--surface-muted)]', 'text-[var(--muted)]');
     input.placeholder = '🎙️ Ti sto ascoltando…';
 
     recognition.onresult = (event) => {
@@ -506,8 +587,18 @@
       input.value = transcript;
     };
 
-    recognition.onerror = () => {
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
       stopListening();
+      const messages = {
+        'not-allowed': '🚫 Permesso al microfono negato. Controlla l\'icona del microfono nella barra degli indirizzi del browser e consenti l\'accesso per questo sito.',
+        'service-not-allowed': '🚫 Permesso al microfono negato dal browser.',
+        'no-speech': '🤔 Non ho sentito nulla. Clicca di nuovo il microfono e parla subito dopo.',
+        'audio-capture': '🎤 Nessun microfono trovato su questo dispositivo.',
+        'network': '📡 Problema di connessione al servizio di riconoscimento vocale. Riprova.',
+      };
+      const msg = messages[event.error];
+      if (msg) alert(msg);
     };
 
     recognition.onend = () => {
@@ -523,8 +614,8 @@
     isListening = false;
     const micBtn = document.getElementById('btn-mic');
     const input = document.getElementById('chat-input');
-    micBtn.classList.remove('bg-red-500', 'text-white', 'animate-pulse');
-    micBtn.classList.add('bg-gray-100', 'text-gray-600');
+    micBtn.classList.remove('bg-[var(--danger)]', 'text-white', 'animate-pulse');
+    micBtn.classList.add('bg-[var(--surface-muted)]', 'text-[var(--muted)]');
     input.placeholder = 'Scrivi la tua domanda…';
   }
 

@@ -3,7 +3,7 @@
 Estratto letterale da `ANALYZE_SYSTEM` in [`app/main.py`](../../app/main.py).
 
 ```
-Sei un esperto di polizze assicurative salute/vita italiano.
+Sei un esperto di polizze assicurative italiane (salute, vita, auto, casa, infortuni e altri rami).
 Analizza il set informativo fornito e restituisci un JSON con questa struttura esatta:
 {
   "prodotto": "nome del prodotto assicurativo",

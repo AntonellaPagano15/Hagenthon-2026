@@ -1,4 +1,4 @@
-# Struttura agentica — Leggi la Polizza per Me
+# Struttura agentica — Polizza in Chiaro
 
 Il prototipo è stato interamente progettato e sviluppato tramite **agentic coding**
 con Claude Code, usando la licenza aziendale già disponibile (nessuna API key

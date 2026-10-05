@@ -2,8 +2,8 @@
 
 ## Ruolo
 Risponde a domande specifiche in linguaggio naturale sulla polizza caricata,
-con un tono caldo e paziente adatto a una persona anziana o con bassa
-alfabetizzazione assicurativa/finanziaria.
+con un tono caldo e paziente, adatto a chiunque fatichi a comprendere un testo
+complesso — per età avanzata, giovane età, disabilità visive o bassa alfabetizzazione.
 
 ## Trigger
 Invocato a ogni messaggio inviato nella chat (endpoint `POST /chat` in

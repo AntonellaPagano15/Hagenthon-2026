@@ -11,7 +11,8 @@ conversazione con Claude Code (agentic coding).
 - Idea derivata dagli esempi del brief ma non coincidente: non "semplificare
   un testo" né "guidare un form", bensì **interpretare un intero set
   informativo assicurativo** e renderlo navigabile con domande libere.
-- Adattamento al dominio assicurativo salute/vita su richiesta del team.
+- Adattamento iniziale al dominio assicurativo salute/vita su richiesta del
+  team, poi generalizzato a qualsiasi polizza (vedi fase 7).
 
 ## 2. Scaffolding
 - Generato con Claude Code: backend FastAPI (`app/main.py`) con 3 endpoint
@@ -49,3 +50,26 @@ conversazione con Claude Code (agentic coding).
   modalità di consegna.
 - Installati Git e GitHub CLI, autenticazione via browser (device flow),
   push su repository pubblico.
+
+## 7. Rifiniture post-consegna
+- Rebranding da "Leggi la Polizza per Me" a **"Polizza in Chiaro"** — nome
+  più breve, senza il verbo "leggere".
+- Generalizzazione del target: non più limitato a persone anziane né a
+  polizze salute/vita, ma a chiunque fatichi a comprendere un testo complesso
+  (età avanzata, giovane età, disabilità visive, bassa alfabetizzazione) e a
+  qualsiasi tipo di polizza. Aggiornati di conseguenza i system prompt in
+  `app/main.py` (prima restavano limitati al dominio salute/vita, in
+  contraddizione con il messaggio comunicato in presentazione e README).
+- Aggiunta funzione di **ascolto della risposta** (text-to-speech via
+  `SpeechSynthesisUtterance`, `it-IT`) per ogni messaggio dell'assistente.
+- Corretto un bug nella gestione degli errori del riconoscimento vocale: gli
+  errori (permesso negato, nessun microfono, nessuna voce rilevata) venivano
+  ignorati in silenzio; ora mostrano un messaggio esplicito.
+- Corretto un bug di percorso: dopo lo spostamento di `main.py` in `app/`, il
+  codice leggeva ancora `static/index.html` con percorso relativo alla
+  working directory del processo. Reso indipendente dalla cwd con
+  `BASE_DIR = os.path.dirname(os.path.abspath(__file__))`.
+- Redesign grafico completo: font Inter, scala tipografica corretta (il
+  `font-size` sul `body` non si applicava alle utility Tailwind basate su
+  rem), palette viola/smeraldo/rosa desaturata, tab in stile "segmented
+  control", gerarchia chiara tra azione primaria e secondaria.
